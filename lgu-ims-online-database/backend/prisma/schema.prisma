@@ -1,0 +1,140 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  MUNICIPAL_ADMIN
+  BARANGAY_USER
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum PackageDirection {
+  BARANGAY_TO_MUNICIPAL
+  MUNICIPAL_TO_BARANGAY
+}
+
+enum ModuleType {
+  RESIDENTS
+  HOUSEHOLDS
+  RESIDENTS_HOUSEHOLDS
+  RPS
+  ASSISTANCE
+  FACED
+  DOCUMENTS
+  CERTIFICATES
+  BARANGAY_PROFILE
+  MUNICIPALITY_PROFILE
+  INVENTORY
+  LEGISLATION
+  REPORTS
+  FULL_BACKUP
+  OTHER
+}
+
+enum PackageStatus {
+  UPLOADED
+  DOWNLOADED
+  REVIEWING
+  IMPORTED
+  REJECTED
+  NEEDS_CORRECTION
+  ARCHIVED
+}
+
+model User {
+  id                 String                  @id @default(cuid())
+  email              String                  @unique
+  passwordHash       String
+  fullName           String
+  role               UserRole
+  assignedBarangayId String?
+  assignedBarangay   Barangay?              @relation(fields: [assignedBarangayId], references: [id])
+  status             UserStatus              @default(ACTIVE)
+  createdAt          DateTime                @default(now())
+  updatedAt          DateTime                @updatedAt
+  deletedAt          DateTime?
+  uploadedFiles      FileAsset[]
+  uploadedPackages   OnlineExchangePackage[] @relation("PackageUploader")
+  logs               OnlineExchangePackageLog[]
+}
+
+model Barangay {
+  id               String                  @id @default(cuid())
+  name             String
+  code             String?
+  district         String?
+  active           Boolean                 @default(true)
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @updatedAt
+  deletedAt        DateTime?
+  users            User[]
+  sourcePackages   OnlineExchangePackage[] @relation("SourceBarangay")
+  targetPackages   OnlineExchangePackage[] @relation("TargetBarangay")
+}
+
+model OnlineExchangePackage {
+  id                String                     @id @default(cuid())
+  direction         PackageDirection
+  moduleType        ModuleType
+  title             String
+  sourceBarangayId  String?
+  sourceBarangay    Barangay?                  @relation("SourceBarangay", fields: [sourceBarangayId], references: [id])
+  targetBarangayId  String?
+  targetBarangay    Barangay?                  @relation("TargetBarangay", fields: [targetBarangayId], references: [id])
+  status            PackageStatus              @default(UPLOADED)
+  notes             String?
+  fileAssetId       String                     @unique
+  fileAsset         FileAsset                  @relation(fields: [fileAssetId], references: [id])
+  uploadedById      String
+  uploadedBy        User                       @relation("PackageUploader", fields: [uploadedById], references: [id])
+  downloadedAt      DateTime?
+  importedAt        DateTime?
+  reviewedAt        DateTime?
+  createdAt         DateTime                   @default(now())
+  updatedAt         DateTime                   @updatedAt
+  deletedAt         DateTime?
+  logs              OnlineExchangePackageLog[]
+}
+
+model FileAsset {
+  id           String                 @id @default(cuid())
+  originalName String
+  storedName   String                 @unique
+  mimeType     String
+  extension    String
+  sizeBytes    BigInt
+  storagePath  String
+  checksum     String?
+  createdAt    DateTime               @default(now())
+  uploadedById String
+  uploadedBy   User                   @relation(fields: [uploadedById], references: [id])
+  package      OnlineExchangePackage?
+}
+
+model OnlineExchangePackageLog {
+  id          String                @id @default(cuid())
+  packageId   String
+  package     OnlineExchangePackage @relation(fields: [packageId], references: [id])
+  status      PackageStatus
+  message     String?
+  createdById String
+  createdBy   User                  @relation(fields: [createdById], references: [id])
+  createdAt   DateTime              @default(now())
+}
+
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+

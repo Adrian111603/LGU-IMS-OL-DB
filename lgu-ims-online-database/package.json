@@ -1,0 +1,16 @@
+{
+  "name": "lgu-ims-online-database",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "backend:dev": "npm --workspace backend run start:dev",
+    "frontend:dev": "npm --workspace frontend run dev",
+    "backend:build": "npm --workspace backend run build",
+    "frontend:build": "npm --workspace frontend run build"
+  }
+}
+
