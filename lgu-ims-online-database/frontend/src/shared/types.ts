@@ -34,6 +34,8 @@ export type User = {
   role: Role;
   assignedBarangayId?: string | null;
   status?: UserStatus;
+  createdAt?: string;
+  updatedAt?: string;
   assignedBarangay?: Barangay | null;
 };
 
@@ -69,4 +71,3 @@ export type PackageLog = {
   createdAt: string;
   createdBy?: User;
 };
-
