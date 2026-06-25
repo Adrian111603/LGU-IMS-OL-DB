@@ -9,6 +9,7 @@ import { UploadPackagePage } from '../features/packages/UploadPackagePage';
 import { SettingsPage } from '../features/settings/SettingsPage';
 import { UserManagementPage } from '../features/users/UserManagementPage';
 import { Shell } from '../layouts/Shell';
+import { AlertProvider } from '../shared/alerts';
 import { PageKey } from '../shared/navigation';
 
 function RoutedApp() {
@@ -42,8 +43,9 @@ function RoutedApp() {
 export function App() {
   return (
     <AuthProvider>
-      <RoutedApp />
+      <AlertProvider>
+        <RoutedApp />
+      </AlertProvider>
     </AuthProvider>
   );
 }
-
