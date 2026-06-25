@@ -3,7 +3,16 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
+function enableBigIntJsonSerialization() {
+  const bigintPrototype = BigInt.prototype as unknown as { toJSON?: () => string };
+  bigintPrototype.toJSON ??= function toJSON(this: bigint) {
+    return this.toString();
+  };
+}
+
 async function bootstrap() {
+  enableBigIntJsonSerialization();
+
   const app = await NestFactory.create(AppModule);
   const config = app.get(ConfigService);
 
@@ -17,4 +26,3 @@ async function bootstrap() {
 }
 
 bootstrap();
-
