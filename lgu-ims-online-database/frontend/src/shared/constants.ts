@@ -31,6 +31,5 @@ export const packageStatuses: PackageStatus[] = [
 export const editableStatuses: PackageStatus[] = ['REVIEWING', 'IMPORTED', 'REJECTED', 'NEEDS_CORRECTION', 'ARCHIVED'];
 
 export function label(value: string) {
-  return value.replaceAll('_', ' ').toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
+  return value.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (char: string) => char.toUpperCase());
 }
-

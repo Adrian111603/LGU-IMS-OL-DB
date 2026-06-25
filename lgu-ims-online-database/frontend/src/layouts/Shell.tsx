@@ -33,7 +33,7 @@ export function Shell({ children, currentPage, onNavigate }: {
         <header className="topbar">
           <div>
             <strong>{user?.fullName}</strong>
-            <span>{user?.role.replaceAll('_', ' ')}</span>
+            <span>{user?.role.replace(/_/g, ' ')}</span>
           </div>
         </header>
         {children}
@@ -41,4 +41,3 @@ export function Shell({ children, currentPage, onNavigate }: {
     </div>
   );
 }
-
